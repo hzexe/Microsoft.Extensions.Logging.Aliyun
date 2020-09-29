@@ -84,11 +84,18 @@ namespace Microsoft.Extensions.Logging.Aliyun
                     {"ver",_ver},
                 },
             };
-            var response = _client.PostLogStoreLogsAsync("banzou", logGroupInfo).Result;
-            // 此接口没有返回结果，确保返回结果成功即可。
-            if (!response.IsSuccess)
+            try
             {
-                System.Diagnostics.Debug.WriteLine($"上传日志错误，RequestId：{  response.RequestId}，code:{response.Error.ErrorCode} msg:{response.Error.ErrorMessage}");
+                var response = _client.PostLogStoreLogsAsync("banzou", logGroupInfo).Result;
+                // 此接口没有返回结果，确保返回结果成功即可。
+                if (!response.IsSuccess)
+                {
+                    System.Diagnostics.Debug.WriteLine($"上传日志错误，RequestId：{  response.RequestId}，code:{response.Error.ErrorCode} msg:{response.Error.ErrorMessage}");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"上传日志错误，RequestId：{ex}");
             }
         }
 
