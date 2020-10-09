@@ -9,35 +9,35 @@ namespace Microsoft.Extensions.Logging
     {
         public static ILoggerFactory AddAliyunLogger(
                                       this ILoggerFactory loggerFactory,
-                                      Microsoft.Extensions.Logging.Aliyun.Configuration config)
+                                      Microsoft.Extensions.Logging.Aliyun.AliyunLoggerConfiguration config)
         {
-            loggerFactory.AddProvider(new LoggerProvider(config));
+            loggerFactory.AddProvider(new AliyunLoggerProvider(config));
             return loggerFactory;
         }
         public static ILoggerFactory AddAliyunLogger(
                                         this ILoggerFactory loggerFactory,
-                                        Action<Microsoft.Extensions.Logging.Aliyun.Configuration> configure)
+                                        Action<Microsoft.Extensions.Logging.Aliyun.AliyunLoggerConfiguration> configure)
         {
-            var config = new Microsoft.Extensions.Logging.Aliyun.Configuration();
+            var config = new Microsoft.Extensions.Logging.Aliyun.AliyunLoggerConfiguration();
             configure(config);
             return loggerFactory.AddAliyunLogger(config);
         }
 
         public static ILoggingBuilder AddAliyunLogger(
                                      this Microsoft.Extensions.Logging.ILoggingBuilder logingBuilder,
-                                     Action<Microsoft.Extensions.Logging.Aliyun.Configuration> configure)
+                                     Action<Microsoft.Extensions.Logging.Aliyun.AliyunLoggerConfiguration> configure)
         {
-            var config = new Microsoft.Extensions.Logging.Aliyun.Configuration();
+            var config = new Microsoft.Extensions.Logging.Aliyun.AliyunLoggerConfiguration();
             configure(config);
-            logingBuilder.AddProvider(new LoggerProvider(config));
+            logingBuilder.AddProvider(new AliyunLoggerProvider(config));
             return logingBuilder;
         }
 
         public static ILoggingBuilder AddAliyunLogger(
                                     this Microsoft.Extensions.Logging.ILoggingBuilder loggerFactory,
-                                    Microsoft.Extensions.Logging.Aliyun.Configuration configure)
+                                    Microsoft.Extensions.Logging.Aliyun.AliyunLoggerConfiguration configure)
         {
-            loggerFactory.AddProvider(new LoggerProvider(configure));
+            loggerFactory.AddProvider(new AliyunLoggerProvider(configure));
             return loggerFactory;
         }
     }

@@ -7,9 +7,9 @@ namespace Microsoft.Extensions.Logging.Aliyun
     /// <summary>
     /// 配置
     /// </summary>
-    public class Configuration
+    public class AliyunLoggerConfiguration
     {
-        public LogLevel LogLevel { get; set; } = LogLevel.Warning;
+        //public LogLevel LogLevel { get; set; } = LogLevel.Warning;
         public int EventId { get; set; } = 0;
 
         public string AccessKeyId { get; set; }

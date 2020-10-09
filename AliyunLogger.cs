@@ -12,10 +12,10 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Extensions.Logging.Aliyun
 {
-    public class Logger : ILogger
+    public class AliyunLogger : ILogger
     {
         private readonly string _name;
-        private readonly Configuration _config;
+        private readonly AliyunLoggerConfiguration _config;
         private readonly static string _ver;
         private readonly static string _appName;
         private readonly System.Collections.Concurrent.ConcurrentBag<LogInfo> logs;
@@ -23,7 +23,7 @@ namespace Microsoft.Extensions.Logging.Aliyun
         private static object _tmrLock = new object();
         private readonly ILogServiceClient _client;
 
-        static Logger()
+        static AliyunLogger()
         {
             if (null != System.Reflection.Assembly.GetEntryAssembly())
             {
@@ -37,7 +37,7 @@ namespace Microsoft.Extensions.Logging.Aliyun
             }
         }
 
-        public Logger(string name, Configuration config)
+        public AliyunLogger(string name, AliyunLoggerConfiguration config)
         {
             var client = LogServiceClientBuilders.HttpBuilder
           // 服务入口<endpoint>及项目名<projectName>。
@@ -106,7 +106,7 @@ namespace Microsoft.Extensions.Logging.Aliyun
 
         public bool IsEnabled(LogLevel logLevel)
         {
-            return logLevel == _config.LogLevel;
+            return logLevel != LogLevel.None;
         }
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
