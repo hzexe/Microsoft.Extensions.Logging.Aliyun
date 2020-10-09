@@ -26,5 +26,9 @@ namespace Microsoft.Extensions.Logging.Aliyun
         {
             _loggers.Clear();
         }
+
+        public static void Flush() {
+            AliyunLogger.DoPutAsync();
+        }
     }
 }

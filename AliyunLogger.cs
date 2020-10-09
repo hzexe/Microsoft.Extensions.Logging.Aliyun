@@ -15,13 +15,13 @@ namespace Microsoft.Extensions.Logging.Aliyun
     public class AliyunLogger : ILogger
     {
         private readonly string _name;
-        private readonly AliyunLoggerConfiguration _config;
+        private static AliyunLoggerConfiguration _config;
         private readonly static string _ver;
         private readonly static string _appName;
-        private readonly System.Collections.Concurrent.ConcurrentBag<LogInfo> logs;
-        private System.Timers.Timer tmr;
+        private static readonly System.Collections.Concurrent.ConcurrentBag<LogInfo> logs;
+        private static System.Timers.Timer tmr;
         private static object _tmrLock = new object();
-        private readonly ILogServiceClient _client;
+        private static ILogServiceClient _client;
 
         static AliyunLogger()
         {
@@ -35,34 +35,42 @@ namespace Microsoft.Extensions.Logging.Aliyun
                 _appName = "";
                 _ver = "0.0.0.0";
             }
+            logs = new System.Collections.Concurrent.ConcurrentBag<LogInfo>();
         }
 
         public AliyunLogger(string name, AliyunLoggerConfiguration config)
         {
-            var client = LogServiceClientBuilders.HttpBuilder
-          // 服务入口<endpoint>及项目名<projectName>。
-          .Endpoint($"{config.Project_name}.{config.Region_endpoint}", config.Project_name)
-          // 访问密钥信息。
-          .Credential(config.AccessKeyId, config.AccessKeySecret)
-          // 设置每次请求超时时间。
-          .RequestTimeout(1000)
-          .Build();
+            lock (_tmrLock)
+            {
+                if (null == _client)
+                {
+                    var client = LogServiceClientBuilders.HttpBuilder
+              // 服务入口<endpoint>及项目名<projectName>。
+              .Endpoint($"{config.Project_name}.{config.Region_endpoint}", config.Project_name)
+              // 访问密钥信息。
+              .Credential(config.AccessKeyId, config.AccessKeySecret)
+              // 设置每次请求超时时间。
+              .RequestTimeout(1000)
+              .Build();
 
-            _name = name;
-            _config = config;
-            _client = client;
-            logs = new System.Collections.Concurrent.ConcurrentBag<LogInfo>();
-            tmr = new System.Timers.Timer(config.MaxDelaySecends * 1000);
-            tmr.Elapsed += Tmr_Elapsed;
-            tmr.Start();
+                    _name = name;
+                    _config = config;
+                    _client = client;
+                    
+                    tmr = new System.Timers.Timer(config.MaxDelaySecends * 1000);
+                    tmr.Elapsed += Tmr_Elapsed;
+                    tmr.Start();
+                }
+            }
+
         }
 
-        private void Tmr_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        private static void Tmr_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             DoPutAsync();
         }
 
-        private void DoPutAsync()
+        public static void DoPutAsync()
         {
             if (logs.Count == 0)
                 return;
@@ -86,7 +94,7 @@ namespace Microsoft.Extensions.Logging.Aliyun
             };
             try
             {
-                var response = _client.PostLogStoreLogsAsync("banzou", logGroupInfo).Result;
+                var response = _client.PostLogStoreLogsAsync(_config.LogstoreName, logGroupInfo).Result;
                 // 此接口没有返回结果，确保返回结果成功即可。
                 if (!response.IsSuccess)
                 {

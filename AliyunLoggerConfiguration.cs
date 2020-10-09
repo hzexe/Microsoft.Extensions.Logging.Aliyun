@@ -43,6 +43,7 @@ namespace Microsoft.Extensions.Logging.Aliyun
 
         public System.Net.Http.HttpMessageHandler messageHandler { get; set; }
 
+        public string LogstoreName { get; set; }
 
         /// <summary>
         /// 已重写,对应访问地址
