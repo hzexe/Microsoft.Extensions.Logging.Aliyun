@@ -56,7 +56,7 @@ namespace Microsoft.Extensions.Logging.Aliyun
                     _name = name;
                     _config = config;
                     _client = client;
-                    
+
                     tmr = new System.Timers.Timer(config.MaxDelaySecends * 1000);
                     tmr.Elapsed += Tmr_Elapsed;
                     tmr.Start();
@@ -131,9 +131,9 @@ namespace Microsoft.Extensions.Logging.Aliyun
                     Contents =
                         {
                             {"level", logLevel+""},
-                            {"time",DateTime.Now.ToString("yyyyMMdd HH:mm:ss.fff")},
+                            {"time",DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")},
                              {"name",_name},
-                            {"content",formatter(state, exception)},
+                            {"content",logLevel>LogLevel.Warning?formatter(state, exception)+"\r\n" + exception:formatter(state, exception)},
                         },
                     Time = DateTimeOffset.Now
                 };
