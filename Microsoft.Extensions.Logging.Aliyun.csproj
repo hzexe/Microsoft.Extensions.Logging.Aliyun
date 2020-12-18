@@ -6,7 +6,7 @@
     <Title>Aliyun log for .net core</Title>
     <Version>0.1.0</Version>
     <AssemblyVersion>0.1.0.0</AssemblyVersion>
-    <PackageId>Microsoft.Extensions.Logging.Aliyun</PackageId>
+    <PackageId>asp.netcore.log.Aliyun</PackageId>
     <Description>阿里云日志asp.net core封装</Description>
     <PackageTags>aliyun,log</PackageTags>
     <PackageProjectUrl>https://github.com/hzexe/Microsoft.Extensions.Logging.Aliyun</PackageProjectUrl>
