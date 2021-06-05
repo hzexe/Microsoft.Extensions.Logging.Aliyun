@@ -14,8 +14,13 @@ namespace Microsoft.Extensions.Logging.Aliyun
         public AliyunLoggerProvider(AliyunLoggerConfiguration config)
         {
             _config = config;
+            AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
         }
 
+        private void CurrentDomain_ProcessExit(object sender, EventArgs e)
+        {
+            Flush();
+        }
 
         public ILogger CreateLogger(string categoryName)
         {
