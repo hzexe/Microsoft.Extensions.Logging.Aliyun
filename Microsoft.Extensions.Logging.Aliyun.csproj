@@ -1,8 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <LangVersion>8.0</LangVersion>
+    <Title>Aliyun log for .net core</Title>
+    <Version>0.1.0</Version>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <PackageId>asp.netcore.log.Aliyun</PackageId>
+    <Description>阿里云日志asp.net core封装</Description>
+    <PackageTags>aliyun,log</PackageTags>
+    <PackageProjectUrl>https://github.com/hzexe/Microsoft.Extensions.Logging.Aliyun</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/hzexe/Microsoft.Extensions.Logging.Aliyun</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Copyright>Apache License 2.0</Copyright>
+    <Deterministic>False</Deterministic>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>bin/$(Configuration)/$(AssemblyName).xml</DocumentationFile>
+    <licenseUrl>https://raw.githubusercontent.com/hzexe/Microsoft.Extensions.Logging.Aliyun/master/LICENSE</licenseUrl>
+    <Authors>Hzexe</Authors>
   </PropertyGroup>
 
   <ItemGroup>
