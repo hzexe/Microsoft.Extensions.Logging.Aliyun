@@ -6,15 +6,16 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Extensions.Logging.Aliyun
 {
-    public class AliyunLogger : ILogger
+    internal sealed class AliyunLogger : ILogger
     {
-        private readonly string _name;
+        private readonly string categoryName;
         private static AliyunLoggerConfiguration _config;
         private readonly static string _ver;
         private readonly static string _appName;
@@ -22,6 +23,8 @@ namespace Microsoft.Extensions.Logging.Aliyun
         private static System.Timers.Timer tmr;
         private static object _tmrLock = new object();
         private static ILogServiceClient _client;
+        ILoggerProvider Provider;
+        internal IExternalScopeProvider ScopeProvider { get; set; }
 
         static AliyunLogger()
         {
@@ -38,8 +41,11 @@ namespace Microsoft.Extensions.Logging.Aliyun
             logs = new System.Collections.Concurrent.ConcurrentBag<LogInfo>();
         }
 
-        public AliyunLogger(string name, AliyunLoggerConfiguration config)
+        public AliyunLogger(string categoryName, AliyunLoggerConfiguration config, ILoggerProvider Provider)
         {
+            this.Provider = Provider;
+            if (categoryName == null)
+                throw new NotImplementedException("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
             lock (_tmrLock)
             {
                 if (null == _client)
@@ -53,10 +59,10 @@ namespace Microsoft.Extensions.Logging.Aliyun
               .RequestTimeout(1000)
               .Build();
 
-                    _name = name;
+                    this.categoryName = categoryName.Clone() as string;
                     _config = config;
                     _client = client;
-                    
+
                     tmr = new System.Timers.Timer(config.MaxDelaySecends * 1000);
                     tmr.Elapsed += Tmr_Elapsed;
                     tmr.Start();
@@ -64,6 +70,9 @@ namespace Microsoft.Extensions.Logging.Aliyun
             }
 
         }
+
+
+
 
         private static void Tmr_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
@@ -107,10 +116,7 @@ namespace Microsoft.Extensions.Logging.Aliyun
             }
         }
 
-        public IDisposable BeginScope<TState>(TState state)
-        {
-            return null;
-        }
+        public IDisposable BeginScope<TState>(TState state) => ScopeProvider?.Push(state) ?? default;
 
         public bool IsEnabled(LogLevel logLevel)
         {
@@ -131,12 +137,31 @@ namespace Microsoft.Extensions.Logging.Aliyun
                     Contents =
                         {
                             {"level", logLevel+""},
-                            {"time",DateTime.Now.ToString("yyyyMMdd HH:mm:ss.fff")},
-                             {"name",_name},
+                            {"time",DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")},
+                             {"name",categoryName},
                             {"content",formatter(state, exception)},
                         },
                     Time = DateTimeOffset.Now
                 };
+                ScopeProvider?.ForEachScope((o, t) =>
+                {
+                    if (o is IEnumerable<KeyValuePair<string, object>>)
+                    {
+                        var obj = o as IEnumerable<KeyValuePair<string, object>>;
+                        if (null == obj) return;
+                        foreach (var item in obj)
+                        {
+                            logInfo.Contents.TryAdd(item.Key, item.Value + "");
+                        }
+                    }
+                    else
+                    {
+
+                    }
+                }, state);
+
+
+
                 logs.Add(logInfo);
                 //if (logs.Count >= _config.LogsCountPerPut)
                 // DoPutAsync();

@@ -6,10 +6,13 @@ using System.Text;
 namespace Microsoft.Extensions.Logging.Aliyun
 {
     [ProviderAlias("Aliyun")]
-    public class AliyunLoggerProvider : ILoggerProvider
+    public class AliyunLoggerProvider : ILoggerProvider, ISupportExternalScope
     {
         private readonly AliyunLoggerConfiguration _config;
         private readonly ConcurrentDictionary<string,AliyunLogger> _loggers = new ConcurrentDictionary<string, AliyunLogger>();
+        private IExternalScopeProvider _scopeProvider = null;
+       
+
 
         public AliyunLoggerProvider(AliyunLoggerConfiguration config)
         {
@@ -24,7 +27,7 @@ namespace Microsoft.Extensions.Logging.Aliyun
 
         public ILogger CreateLogger(string categoryName)
         {
-            return _loggers.GetOrAdd(categoryName, name => new AliyunLogger(name, _config));
+            return _loggers.GetOrAdd(categoryName, name => new AliyunLogger(name, _config, this) { ScopeProvider = _scopeProvider });
         }
 
         public void Dispose()
@@ -34,6 +37,16 @@ namespace Microsoft.Extensions.Logging.Aliyun
 
         public static void Flush() {
             AliyunLogger.DoPutAsync();
+        }
+
+        public void SetScopeProvider(IExternalScopeProvider scopeProvider)
+        {
+            _scopeProvider = scopeProvider;
+
+            foreach (var logggger in _loggers)
+            {
+                logggger.Value.ScopeProvider = _scopeProvider;
+            }
         }
     }
 }
