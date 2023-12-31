@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>12.0</LangVersion>
     <Title>Aliyun log for .net core</Title>
     <Version>0.1.0</Version>
     <AssemblyVersion>0.1.0.0</AssemblyVersion>
